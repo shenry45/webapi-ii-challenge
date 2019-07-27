@@ -30,6 +30,8 @@ router.post('/', async (req, res) => {
 
 router.post('/:id/comments', async (req, res) => {
   try {
+    console.log(req.body, req.params);
+
     const {id} = req.params;
     const commentEdit = {
       ...req.body,
@@ -38,7 +40,9 @@ router.post('/:id/comments', async (req, res) => {
 
     const idStatus = await db.findById(id);
 
-    if (!idStatus) {
+    console.log(idStatus);
+
+    if (idStatus.length === 0) {
       res.status(404).json({
         success: false,
         message: "The post with the specified ID does not exist."
@@ -72,7 +76,7 @@ router.get('/:id', async (req, res) => {
 
     const postInfo = await db.findById(id);
 
-    if (!postInfo) {
+    if (postInfo.length === 0) {
       res.status(404).json({
         success: false,
         message: "The post with the specified ID does not exist."
@@ -98,7 +102,7 @@ router.get('/:id/comments', async (req, res) => {
 
     const postInfo = await db.findById(id);
 
-    if (!postInfo) {
+    if (postInfo.length === 0) {
       res.status(404).json({
         success: false,
         message: "The post with the specified ID does not exist."
@@ -118,6 +122,32 @@ router.get('/:id/comments', async (req, res) => {
       error: "The post information could not be retrieved.",
       errorMessage: err.message
     })
+  }
+})
+
+router.delete('/:id', async (req, res) => {
+  try {
+
+    const {id} = req.params;
+
+    const postInfo = await db.findById(id);
+
+    if (postInfo.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "The post with the specified ID does not exist."
+      })
+    } else {
+      const deletePost = await db.remove(id);
+
+      res.status(202).json({
+        success: true,
+        message: "The post requested has been deleted",
+        deletePost
+      })
+    }
+  } catch (err) {
+
   }
 })
 
