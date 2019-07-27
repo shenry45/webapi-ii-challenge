@@ -30,8 +30,6 @@ router.post('/', async (req, res) => {
 
 router.post('/:id/comments', async (req, res) => {
   try {
-    console.log(req.body, req.params);
-
     const {id} = req.params;
     const commentEdit = {
       ...req.body,
@@ -39,8 +37,6 @@ router.post('/:id/comments', async (req, res) => {
     }
 
     const idStatus = await db.findById(id);
-
-    console.log(idStatus);
 
     if (idStatus.length === 0) {
       res.status(404).json({
@@ -147,7 +143,51 @@ router.delete('/:id', async (req, res) => {
       })
     }
   } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: "The post could not be removed"
+    })
+  }
+})
 
+router.put('/:id', async (req, res) => {
+  try {
+    const {id} = req.params;
+
+    const postInfo = await db.findById(id);
+
+    const postEdited = {
+      ...postInfo[0]
+    };
+ 
+    postEdited.title = req.body.title;
+    postEdited.contents = req.body.contents;
+
+    if (postInfo.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "The post with the specified ID does not exist."
+      })
+    } else if (!req.body.title || !req.body.contents) {
+      res.status(400).json({
+        success: false,
+        errorMessage: "Please provide title and contents for the post."
+      })
+    } else {
+      const commentInfo = await db.update(id, postEdited);
+      
+      res.status(200).json({
+        success: true,
+        postEdited
+      })
+    }
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: "The post information could not be modified.",
+      errorMessage: err.message
+    })
   }
 })
 

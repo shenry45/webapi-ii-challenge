@@ -1,10 +1,14 @@
 const express = require('express');
+const cors = require('cors');
+
 const db = require('./data/db.js');
+
 const postRouter = require('./posts/posts-router');
 
 const server = express();
 
 server.use(express.json());
+server.use(cors());
 server.use('/api/posts', postRouter);
 
 server.use('/', async (req, res) => {
