@@ -49,9 +49,7 @@ router.post('/:id/comments', async (req, res) => {
         errorMessage: "Please provide text for the comment."
       })
     } else {
-      console.log('before 2nd await');
       const postCommInfo = await db.insertComment(commentEdit);
-      console.log('after 2nd await');
 
       res.status(201).json({
         success: true,
@@ -67,5 +65,31 @@ router.post('/:id/comments', async (req, res) => {
     })
   }
 })
+
+router.get('/:id', async (req, res) => {
+  try {
+    const {id} = req.params;
+
+    const postInfo = await db.findById(id);
+
+    if (!postInfo) {
+      res.status(404).json({
+        success: false,
+        message: "The post with the specified ID does not exist."
+      })
+    } else {
+      res.status(200).json({ 
+        success: true,
+        postInfo
+      })
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: "The post information could not be retrieved.",
+      errorMessage: err.message
+    })
+  }
+});
 
 module.exports = router;

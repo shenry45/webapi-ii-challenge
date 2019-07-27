@@ -18,7 +18,8 @@ server.use('/', async (req, res) => {
   } catch (err) {
     res.status(500).json({
       success: false,
-      err
+      error: "The posts information could not be retrieved.",
+      errorMessage: err.message
     })
   }
 })
