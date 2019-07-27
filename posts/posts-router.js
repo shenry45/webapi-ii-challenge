@@ -30,7 +30,19 @@ router.post('/', async (req, res) => {
 
 router.post('/:id/comments', async (req, res) => {
   try {
+    if (!req.body.id) {
+      res.status(404).json({
+        success: false,
+        message: "The post with the specified ID does not exist."
+      })
+    } else {
+      const postInfo = await db.insertComment(req.body);
 
+      res.status(201).json({
+        success: true,
+        postInfo
+      })
+    }
   }
   catch(err) {
 
